@@ -1,84 +1,126 @@
-%>>>>>>>>> MATLAB code for binary ASK modulation and de-modulation >>>>>>>%
-clc;
-clear all;
-close all;
-x=[ 1 0 0 1 1 0 1];                                    % Binary Information
-bp=.000001;                                                    % bit period
-disp(' Binary information at Trans mitter :');
+% <<<<<<<<<<<<<<<<<<<< ASK Modulation and Demodulation >>>>>>>>>>>>>>>>>>>>
+
+clc, clear all, close all;
+
+
+% ******************* Digital/Binary input information ********************
+
+x = input('Enter Digital Input Information = ');   % Binary information as stream of bits (binary signal 0 or 1)
+N = length(x);
+Tb = 0.0001;   %Data rate = 1MHz i.e., bit period (second)
+disp('Binary Input Information at Transmitter: ');
 disp(x);
-%XX representation of transmitting binary information as digital signal XXX
-bit=[]; 
-for n=1:1:length(x)
-    if x(n)==1;
-       se=ones(1,100);
-    else x(n)==0;
-        se=zeros(1,100);
+
+
+% ************* Represent input information as digital signal *************
+
+nb = 100;   % Digital signal per bit
+digit = []; 
+for n = 1:1:N
+    if x(n) == 1;
+       sig = ones(1,nb);
+    else x(n) == 0;
+        sig = zeros(1,nb);
     end
-     bit=[bit se];
+     digit = [digit sig];
 end
-t1=bp/100:bp/100:100*length(x)*(bp/100);
+
+t1 = Tb/nb:Tb/nb:nb*N*(Tb/nb);   % Time period
+figure('Name','ASK Modulation and Demodulation','NumberTitle','off');
 subplot(3,1,1);
-plot(t1,bit,'lineWidth',2.5);grid on;
-axis([ 0 bp*length(x) -.5 1.5]);
-ylabel('amplitude(volt)');
-xlabel(' time(sec)');
-title('transmitting information as digital signal');
-%XXXXXXXXXXXXXXXXXXXXXXX Binary-ASK modulation XXXXXXXXXXXXXXXXXXXXXXXXXXX%
-A1=10;                      % Amplitude of carrier signal for information 1
-A2=5;                       % Amplitude of carrier signal for information 0
-br=1/bp;                                                         % bit rate
-f=br*10;                                                 % carrier frequency 
-t2=bp/99:bp/99:bp;                 
-ss=length(t2);
-m=[];
-for (i=1:1:length(x))
-    if (x(i)==1)
-        y=A1*cos(2*pi*f*t2);
+plot(t1,digit,'LineWidth',2.5);
+grid on;
+axis([0 Tb*N -0.5 1.5]);
+xlabel('Time(Sec)');
+ylabel('Amplitude(Volts)');
+title('Digital Input Signal');
+
+
+% **************************** ASK Modulation *****************************
+
+Ac1 = 12;     % Carrier amplitude for binary input '1'
+Ac2 = 5;      % Carrier amplitude for binary input '0'
+br = 1/Tb;    % Bit rate
+Fc = br*10;   % Carrier frequency 
+t2 = Tb/nb:Tb/nb:Tb;   % Signal time             
+
+mod = [];
+for (i = 1:1:N)
+    if (x(i) == 1)
+        y = Ac1*cos(2*pi*Fc*t2);   % Modulation signal with carrier signal 1
     else
-        y=A2*cos(2*pi*f*t2);
+        y = Ac2*cos(2*pi*Fc*t2);   % Modulation signal with carrier signal 2
     end
-    m=[m y];
+    mod = [mod y];
 end
-t3=bp/99:bp/99:bp*length(x);
+
+t3 = Tb/nb:Tb/nb:Tb*N;   % Time period
 subplot(3,1,2);
-plot(t3,m);
-xlabel('time(sec)');
-ylabel('amplitude(volt)');
-title('waveform for binary ASK modulation coresponding binary information');
-%XXXXXXXXXXXXXXXXXXXX Binary ASK demodulation XXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-mn=[];
-for n=ss:ss:length(m)
-  t=bp/99:bp/99:bp;
-  y=cos(2*pi*f*t);                                        % carrier siignal 
-  mm=y.*m((n-(ss-1)):n);
-  t4=bp/99:bp/99:bp;
-  z=trapz(t4,mm)                                              % intregation 
-  zz=round((2*z/bp))                                     
-  if(zz>7.5)                                  % logic level = (A1+A2)/2=7.5
-    a=1;
+plot(t3,mod);
+xlabel('Time(Sec)');
+ylabel('Amplitude(Volts)');
+title('ASK Modulated Signal');
+
+
+% ********************* Transmitted signal x ******************************
+
+x = mod;
+
+
+% ********************* Channel model h and w *****************************
+
+h = 1;   % Signal fading 
+w = 0;   % Noise
+
+
+% ********************* Received signal y *********************************
+
+y = h.*x + w;   % Convolution
+
+
+
+% *************************** ASK Demodulation ****************************
+
+s = length(t2);
+demod = [];
+for n = s:s:length(y)
+  t4 = Tb/nb:Tb/nb:Tb;    % Time period
+  c = cos(2*pi*Fc*t4);    % Carrier signal 
+  mm = c.*y((n-(s-1)):n); % Convolution 
+  t5 = Tb/nb:Tb/nb:Tb;
+  z = trapz(t5,mm);       % Intregation 
+  rz = round((2*z/Tb));
+  Ac = ((Ac1 + Ac2)/2);   % Average of carrier amplitudes
+  if(rz > Ac)             % Logical condition 
+    a = 1;
   else
-    a=0;
+    a = 0;
   end
-  mn=[mn a];
+  demod = [demod a];
 end
-disp(' Binary information at Reciver :');
-disp(mn);
-%XXXXX Representation of binary information as digital signal which achived 
-%after ASK demodulation XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-bit=[];
-for n=1:length(mn);
-    if mn(n)==1;
-       se=ones(1,100);
-    else mn(n)==0;
-        se=zeros(1,100);
+
+disp('Demodulated Binary Information at Receiver: ');
+disp(demod);
+
+% ********** Represent demodulated information as digital signal **********
+
+
+digit = [];
+for n = 1:length(demod);
+    if demod(n) == 1;
+       sig = ones(1,nb);
+    else demod(n) == 0;
+        sig = zeros(1,nb);
     end
-     bit=[bit se];
+     digit = [digit sig];
 end
-t4=bp/100:bp/100:100*length(mn)*(bp/100);
+
+t5 = Tb/nb:Tb/nb:nb*length(demod)*(Tb/nb);   % Time period
 subplot(3,1,3)
-plot(t4,bit,'LineWidth',2.5);grid on;
-axis([ 0 bp*length(mn) -.5 1.5]);
-ylabel('amplitude(volt)');
-xlabel(' time(sec)');
-title('recived information as digital signal after binary ASK demodulation');
-%>>>>>>>>>>>>>>>>>>>>>>>>>> end of program >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>%
+plot(t5,digit,'LineWidth',2.5);grid on;
+axis([0 Tb*length(demod) -0.5 1.5]);
+xlabel('Time(Sec)');
+ylabel('Amplitude(Volts)');
+title('ASK Demodulated Signal');
+
+% ************************** End of the program ***************************

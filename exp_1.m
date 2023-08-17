@@ -79,3 +79,8 @@ axis([0 100 -2 3]);  title('Encoded Signal');
  title('Demodulated Signal');
  ylabel('Amplitude--->');
  xlabel('Time--->');
+
+ % date 4/8/23
+
+ % input 
+ % 16 , 5

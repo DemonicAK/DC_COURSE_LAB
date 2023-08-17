@@ -125,6 +125,7 @@ title('ASK Demodulated Signal');
 
 % ************************** End of the program ***************************
 
+%date 11/8/23
 
 % input
 % [ 1 0 0 1 1 0 1]

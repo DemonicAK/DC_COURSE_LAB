@@ -82,3 +82,5 @@ ylabel('amplitude(volt)');
 xlabel(' time(sec)');
 title('recived information as digital signal after binary ASK demodulation');
 %>>>>>>>>>>>>>>>>>>>>>>>>>> end of program >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>%
+
+% date 8/8/23

@@ -124,3 +124,7 @@ ylabel('Amplitude(Volts)');
 title('ASK Demodulated Signal');
 
 % ************************** End of the program ***************************
+
+
+% input
+% [ 1 0 0 1 1 0 1]

@@ -95,4 +95,4 @@ title('PSK demodulated wave corresponding to binary information at the receiver 
 
 % date 18/8/23
 % input 
-% [1 0 0 1 1 0 1]
+% [0 0 1 1 1 1 0 1]

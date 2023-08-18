@@ -9,3 +9,10 @@ Here are Group1 codes
 exp1 -- PCM
 
 exp2 -- ASK
+
+exp3 -- FSK
+
+        (a) mod demod
+        (b) BER calculation
+
+exp4 -- PSK

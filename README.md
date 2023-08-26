@@ -10,9 +10,15 @@ exp1 -- PCM
 
 exp2 -- ASK
 
+        (a) mod demod
+        (b) BER calculation
+
 exp3 -- FSK
 
         (a) mod demod
         (b) BER calculation
 
 exp4 -- PSK
+
+        (a) mod demod
+        (b) BER calculation
